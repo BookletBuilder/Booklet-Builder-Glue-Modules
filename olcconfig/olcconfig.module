@@ -1,0 +1,96 @@
+<?php
+
+function olcconfig_menu() {
+  $items['admin/config/olc-variables'] = array(
+    'access arguments' => array('access content'),
+    'title' => 'OLC Variables',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('olcconfig_admin_var_form'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function olcconfig_admin_var_form () {
+  $config = variable_get('olcconfig', array());
+  return array(
+    'service_provider' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Service provider'),
+      'service_provider_name' => array(
+        '#weight' => 1,
+        '#title' => t('Name'),
+        '#type' => 'textfield',
+        '#default_value' => $config['service_provider_name'],
+        '#description' => t('Where the system is hosted'),
+      ),
+    ),
+    'second_language' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Language studied'),
+      'second_language_code' => array(
+        '#weight' => 1,
+        '#title' => t('Language code'),
+        '#type' => 'textfield',
+				'#default_value' => $config['second_language_code'],
+      ),
+      'second_language_locale' => array(
+        '#weight' => 2,
+        '#title' => t('Locale'),
+        '#type' => 'textfield',
+      	'#default_value' => $config['second_language_locale'],
+      ),
+			'second_language_translit_code' => array(
+        '#weight' => 3,
+        '#title' => t('Transliteration code'),
+        '#type' => 'textfield',
+      	'#default_value' => $config['second_language_translit_code'],
+      ),      
+    ),
+    'instruction_language' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Instruction language'),
+      'instruction_language_code' => array(
+        '#weight' => 1,
+        '#title' => t('Language code'),
+        '#type' => 'textfield',
+        '#default_value' => $config['instruction_language_code'],
+      ),
+      'instruction_language_locale' => array(
+        '#weight' => 2,
+        '#title' => t('Locale'),
+        '#type' => 'textfield',
+      	'#default_value' => $config['instruction_language_locale'],
+      ),
+			'instruction_language_translit_code' => array(
+        '#weight' => 3,
+        '#title' => t('Transliteration code'),
+        '#type' => 'textfield',
+      	'#default_value' => $config['instruction_language_translit_code'],
+      ),
+    ),
+    'submit' => array(
+      '#weight' => 4,
+      '#type' => 'submit',
+      '#value' => 'Submit',
+      '#submit' => array('_olcconfig_admin_var_submit'),
+    ),
+  );
+}
+
+function _olcconfig_admin_var_submit (&$form, &$form_state) {
+  $config = variable_get('olcconfig', array());
+  $value_keys = array(
+    'service_provider_name',
+    'second_language_code',
+    'second_language_locale',
+    'second_language_translit_code',
+    'instruction_language_code',
+    'instruction_language_locale',
+    'instruction_language_translit_code'
+  );
+  foreach ($value_keys as $value_key) {
+    $config[$value_key] = $form_state['values'][$value_key];
+  }
+  variable_set('olcconfig', $config);
+}

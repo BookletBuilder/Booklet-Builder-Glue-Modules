@@ -1,0 +1,378 @@
+<?php
+
+function olctbui_init() {
+  
+  $css_files = array(
+    'default.css',
+    'booklet.css',
+    'booklet-menu.css',
+    'booklet-theme.css',
+    'catalog.css'
+  );
+  $path = drupal_get_path('module', 'olctbui');
+  foreach ($css_files as $css_file) {
+    $css_path = $path.'/visual-design/'.$css_file;
+    drupal_add_css($css_path, array('every_page' => TRUE));
+  }
+
+}
+
+function olctbui_preprocess_html(&$vars) {
+  $pages = array(
+    'page-catalog',
+    'node-type-section' 
+  );
+  $page_matches = count(array_intersect($vars['classes_array'], $pages));
+  if ($page_matches) {
+    $vars['classes_array'] []= 'olc-book-theme';
+  }
+  else {
+    // Skip
+  }
+}
+
+function olctbui_field_info_alter(&$info) {
+}
+
+function olctbui_block_configure($block_name = '') {
+  return array();
+}
+
+function olctbui_block_save($block_name = '', $values = array()) {
+}
+
+function olctbui_block_info() {
+  $defaults = array(
+    'status' => TRUE,
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'weight' => 0,
+    'region' => BLOCK_REGION_NONE,
+  );
+  $blocks['olctbui_textbook'] = $defaults + array(
+    'info' => t('Textbook UI'),
+    'visibility' => BLOCK_VISIBILITY_PHP,
+    'pages' => '<?php return _olctbui_is_textbook_view_page() ?>',
+  );
+  $blocks['olctbui_section'] = $defaults + array(
+    'info' => t('Textbook Section UI'),
+    'visibility' => BLOCK_VISIBILITY_PHP,
+    'pages' => '<?php return _olctbui_is_section_node_page() && _olctbui_can_modify_node() ?>',
+  );
+  $blocks['olctbui_chapter'] = $defaults + array(
+    'info' => t('Textbook Chapter UI'),
+    'visibility' => BLOCK_VISIBILITY_PHP,
+    'pages' => '<?php return _olctbui_is_chapter_term_page() ?>',
+  );
+  
+  return $blocks;
+}
+
+function olctbui_block_view($block_name = '') {
+  switch ($block_name) {
+    case 'olctbui_textbook':
+      return _olctbui_block_view_textbook();
+      break;
+    case 'olctbui_chapter':
+      return _olctbui_block_view_chapter();
+      break;
+    case 'olctbui_section':
+      return _olctbui_block_view_section();
+      break;
+    default:
+      // Block name unknown
+      return NULL;
+      break;
+  }
+}
+
+function _olctbui_block_view_textbook () {
+  return array(
+    'subject' => 'Textbook options',
+    'content' => array('#markup' => theme('item_list', array('items' => array(
+      l('Manage categories', 'admin/structure/taxonomy/sections'),
+      l('Add section', 'node/add/section', array('query' => array(
+        'destination' => '<front>'
+      )))
+    )))),
+  );
+}
+
+function _olctbui_block_view_chapter () {
+  if (_olctbui_is_chapter_term_page()) {
+    $chapter = taxonomy_term_load(arg(2)) ;
+    $content = theme('item_list', array('items' => array(
+      l('Add section', 'node/add/section', array('query' => array(
+        'field_category' => $chapter->tid,
+        'destination' => 'taxonomy/term/'.$chapter->tid,
+      )))
+    )));
+  }
+  else {
+    $content = 'Not a chapter page';
+  }
+  return array(
+    'subject' => 'Chapter options',
+    'content' => array(
+      '#markup' => $content
+    ),
+  );
+}
+
+function _olctbui_block_view_section () {
+
+  $is_section_node_page = _olctbui_is_section_node_page();
+  if ($is_section_node_page) {
+    
+    $section = node_load(arg(1)); 
+    $section_group = og_get_group('node', $section->nid);
+    
+    // Prepare block content
+    $types = array(
+      'lesson',
+      'morpheme',
+      'word',
+      'person',
+      'place',
+      'phrase',
+      'sentence',
+      'conversation',
+      'narrative',
+      'article'
+    );
+    $items = array();
+    foreach ($types as $type) {
+      $node_type = node_type_load($type);
+      $items []= l('Add '.$node_type->name, 'node/add/'.$node_type->type, array('query'=>array(
+        'group_audience' => $section_group->gid,
+        'destination' => 'node/'.$section->nid,
+      )));
+    }
+    
+    $content = theme('item_list', array('items' => $items));
+  
+  }
+  else {
+    $content = 'Not a "Section" node page';
+  }
+
+  // Return block
+  return array(
+    'subject' => 'Booklet options',
+    'content' => array(
+      '#markup' => $content
+    ),
+  );
+  
+}
+
+function _olctbui_is_section_node_page() {
+  if (arg(0) == 'node') {
+    if (is_numeric(arg(1))) {
+      $node = node_load(arg(1));
+      if ($node != false && $node->type == 'section') {
+        return TRUE;
+      }
+      else {
+        // Not a section node
+        return FALSE;
+      }
+    }
+    else {
+      // Not a node ID
+      return FALSE;
+    }
+  }
+  else {
+    // Not a node page
+    return FALSE;
+  }
+}
+
+function _olctbui_can_modify_node() {
+  if (arg(0) == 'node') {
+    if (is_numeric(arg(1))) {
+      $node = node_load(arg(1));
+      return node_access('update', $node);
+    }
+    else {
+      // Not a node ID
+      return FALSE;
+    }
+  }
+  else {
+    // Not a node page
+    return FALSE;
+  }
+}
+
+function _olctbui_is_textbook_view_page() {
+  return arg(0) == 'chapters';
+}
+
+function _olctbui_is_chapter_term_page() {
+  
+  $chapter_vocab = taxonomy_vocabulary_machine_name_load(CHAPTER_TAXONOMY_NAME);
+  
+  if (arg(0) == 'taxonomy' && arg(1) == 'term') {
+    if (is_numeric(arg(2))) {
+      $term = taxonomy_term_load(arg(2));
+      if ($term->vid == $chapter_vocab->vid) {
+        return TRUE;
+      }
+      else {
+        // Not a section term
+        return FALSE;
+      }
+    }
+    else {
+      // Not a term ID
+      return FALSE;
+    }
+  }
+  else {
+    // Not a taxonomy term page
+    return FALSE;
+  }
+}
+
+function olctbui_menu() {
+  $items = array();
+  $items['group/%og/redirect-to-entity'] = array(
+    'access arguments' => array('access content'),
+    'page callback' => '_olctbui_og_redirect_to_entity',
+    'page arguments' => array(1),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function _olctbui_og_redirect_to_entity($group) {
+  if ($group->entity_type == 'node') {
+    $node = $group->getEntity();
+    drupal_goto('node/'.$node->nid);
+  }
+  else {
+    // Unhandled entity type
+    drupal_set_message('Unhandled entity type');
+  }
+  return 'This page redirects to the group\'s entity page';
+}
+
+function olctbui_field_widget_form_alter(&$element, &$form_state, $context) {
+
+  if(isset($element['#field_name'])) {
+    switch ($element['#field_name']) {
+      
+      case 'group_group':
+        _olctbui_field_widget_hide($element);
+        break;
+      
+      case 'group_audience':
+        _olctbui_field_widget_hide($element);
+        _olctbui_field_widget_select_from_url_form_alter('group_audience', $element, $form_state, $context);
+        break;
+      
+      case 'field_category':
+        _olctbui_field_widget_hide($element);
+        _olctbui_field_widget_select_from_url_form_alter('field_category', $element, $form_state, $context);
+        break;
+        
+      case 'field_for_conversation':
+        _olctbui_field_widget_hide($element);
+        _olctbui_field_widget_select_from_url_form_alter('field_for_conversation', $element, $form_state, $context);
+        break;
+        
+      case 'field_root_word':
+        _olctbui_field_widget_hide($element);
+        _olctbui_field_widget_select_from_url_form_alter('field_root_word', $element, $form_state, $context);
+        break;
+        
+      case 'field_for_entity':
+        _olctbui_field_widget_hide($element);
+        _olctbui_field_widget_select_from_url_form_alter('field_for_entity', $element, $form_state, $context);
+        break;
+      
+      default:
+        // Field not handled
+        break;
+        
+    }
+  }
+  else {
+    //dpm('Field name not set');
+    //dpm($element);
+  }
+  
+}
+
+function _olctbui_field_widget_hide(&$element) {
+  if (!user_access('administer nodes')) {
+
+    drupal_add_js('
+      jQuery(document).ready(function(){
+        jQuery(".hide-element").hide();
+      });
+    ', 'inline');
+    
+    // Hide group widget
+    $element['#prefix']= '<div class="hide-element">';
+    $element['#suffix'] = '</div>';
+    
+  }
+  else {
+    // Can administer nodes
+    // Administrators should be able to edit the fields
+  }
+}
+
+function _olctbui_field_widget_select_from_url_form_alter($field_name, &$element, &$form_state, $context) {
+
+  // TODO: THE WIDGET TYPE SHOULD BE DETERMINED AND HANDLED PER TYPE AND HANDLED PER TYPE AND HANDLED PER TYPE AND HANDLED PER TYPE
+  
+  // Display the audiences this node belongs to as HTML (with remove buttons)
+  if (isset($element['#field_name'])) {
+    if (isset($element['#field_name']) == $field_name) {
+      if (!empty($_GET[$field_name])) {
+        
+        _olctbui_field_widget_hide($element);
+
+        $values = explode(',',$_GET[$field_name]);
+        if (is_array($element['#default_value'])) {
+          
+          // SELECT LIST WIDGET
+          $element['#default_value'] += $values;
+          $element['#default_value'] = array_unique($element['#default_value']);
+
+        }
+        else if (is_string($element['#default_value'])) {
+
+          // AUTOCOMPLETE (TAGGING)
+          $value_array = array();
+          foreach ($values as $value) {
+            $value_node = node_load($value);
+            $value_array []= $value_node->title.' ('.$value_node->nid.')';
+          }
+          $element['#default_value'] = implode(', ', $value_array);
+
+        }
+        else {
+          // Unknown default value format
+        }
+        
+      }
+      else {
+        // Url query key not found
+        //dpm('URL query key not found');
+      }
+    }
+    else {
+      // Field name mismatch
+      //dmp('Field name mismatch');
+    }
+  }
+  else {
+    // Not a field
+    //dpm('Not a field');
+  }
+  
+}

@@ -1,0 +1,146 @@
+<?php
+
+function olcpart_node_load($nodes, $types) {
+
+  $config = _olcpart_config();
+  
+  // Check types (for early exit)
+  $config_types = array_keys($config);
+  $is_config_type = array_intersect($config_types, $types);
+  if (true || $is_config_type) {
+  
+    // Process nodes
+    foreach ($nodes as &$node) {
+    
+      // Check node type
+      $path = drupal_get_path('module', 'olcpart');
+      $is_config_type = in_array($node->type, $config_types);
+      if ($is_config_type) {
+
+        // Initialize node property
+        $node->olcbooklet_parts = array();
+        
+        // Iterate config
+        foreach ($config[$node->type] as $config_item) {
+
+          // If node field exists
+          $node_field = $config_item['field'];
+          if (property_exists($node, $node_field)) {
+          
+            $field = $config_item['path'][0];
+            $lang = $config_item['path'][1];
+            $format = $config_item['path'][2];
+            $new_item = array(
+              $field => array(
+                $lang => array(
+                  $format => array(
+                    $node->{$node_field}
+                  ),
+                ),
+              ),
+            );
+            
+            $node->olcbooklet_parts = array_merge_recursive($node->olcbooklet_parts, $new_item);
+            
+          }
+          else {
+            // Node property missing; Skip
+          }
+        } // End foreach node config
+      }
+      else {
+        // Not the right type of node
+      }
+    } // End foreach node
+  }
+  else {
+    // Not the right type of node
+  }  
+}
+
+function _olcpart_config() {
+  static $config;
+  if (!isset($config)) {
+    $config = array();
+    $config_filepath = DRUPAL_ROOT . '/' . drupal_get_path('module', 'olcpart') . '/olcpart.CONFIG';
+    $config_file = _olcpart_config_file_array($config_filepath);
+    foreach ($config_file as &$config_line) {
+      $config_line = _olcpart_config_parse_line($config_line);
+      if ($config_line !== FALSE) {
+      
+        $type = $config_line['type'];
+        $config[$type] []= $config_line;
+        
+      }
+      else {
+        // Skip line
+      }
+    }
+  }
+  else {
+    // Use static config
+  }
+  return $config;
+}
+
+function _olcpart_config_file_array($filepath) {
+  static $config_file;
+  if (!isset($config_file)) {
+    $config_file  = array();
+    $CONFIG_FILE = fopen($filepath, 'r');
+    if ($CONFIG_FILE) {
+      while (!feof($CONFIG_FILE)) {
+        $config_file []= fgets($CONFIG_FILE);
+      }
+      fclose($CONFIG_FILE);
+    }
+    else {
+      // Could not open file
+      drupal_set_message('Could not open file path: ' . $filepath, 'error');
+    }
+  }
+  else {
+    // Use static version
+  }
+  return $config_file;
+}
+
+function _olcpart_config_parse_line($line) {
+
+  $result = array();
+  
+  // Remove comments
+  $line = explode('#', $line);
+  $line = $line[0];
+  
+  // Trim line
+  $line = trim($line);
+  if (!empty($line)) {
+  
+    // Split line into columns
+    $line = explode(':', $line);
+    if (count($line) == 3) {
+    
+      // Trim columns
+      foreach ($line as &$col) {
+        $col = trim($col);
+      }
+      
+      $result['type'] = $line[0];
+      $result['field'] = $line[1];
+      $result['path'] = explode('/', $line[2]);
+    
+    }
+    else {
+      // Line has incorrect number of columns
+      $result = FALSE;
+    }
+  }
+  else {
+    // Line is empty
+    $result = FALSE;
+  }
+  
+  return $result;
+  
+}

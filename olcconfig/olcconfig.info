@@ -1,0 +1,4 @@
+package = .OLC
+name = OLC Config
+description = OLC admin configuration variables
+core = 7.x

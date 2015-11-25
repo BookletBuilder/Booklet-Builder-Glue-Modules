@@ -1,0 +1,5 @@
+package = .OLC
+name = OLC Textbook UI
+description = UI for editing textbook content 
+core = 7.x
+dependencies []= php

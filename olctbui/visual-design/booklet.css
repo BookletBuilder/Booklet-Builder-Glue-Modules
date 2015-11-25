@@ -1,0 +1,64 @@
+.node-section div.view table.views-table .views-field-body img {
+  float: left;
+  padding-right: .5em;
+  padding-bottom: .5em;
+}
+
+.node-section div.view table.views-table .views-field-field-weight {
+  /*width: 32px;*/
+}
+
+.node-section div.view table.views-table .views-field-field-gender {
+  /*width: 48px;*/
+}
+
+.node-section div.view table.views-table .views-field-field-picture {
+  /*width: 102px;*/
+}
+
+.node-section div.view table.views-table .views-field-edit-node {
+  /*width: 160px;*/
+}
+
+.node-section div.view .tabledrag-toggle-weight-wrapper {
+  display: none;
+}
+
+.node-section div.view table.views-table {
+  margin: 0px;
+}
+
+.node-section div.view-section-lessons .audioplayer2 {
+  width: auto;
+}
+
+.node-section div.view-section-conjugation .views-table caption h3 {
+  margin: 0px;
+  padding-top: 1em;
+}
+.node-section div.view-section-conjugation .views-table:first-child caption h3 {
+  padding: 0px;
+}
+
+.node-section div.view-section-conjugation .view-grouping {
+  margin-top: 1em;
+}
+
+.node-section div.field-type-taxonomy-term-reference {
+  margin: .5em 0px;
+  border: 1px solid #bbbbbb;
+  background-color: #dddddd;
+  padding: 1em;
+}
+
+.node-section div.field-name-field-prerequisites {
+  margin: .5em 0px;
+  border: 1px solid #bbbbbb;
+  background-color: #dddddd;
+  padding: 1em;
+  font-size: 0.8em;
+}
+
+.node-section div.field-name-field-prerequisites .field-label {
+  font-weight: normal;
+}

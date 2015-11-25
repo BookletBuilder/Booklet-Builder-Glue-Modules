@@ -1,0 +1,1 @@
+The Drupal modules required for the Booklet Builder application to function

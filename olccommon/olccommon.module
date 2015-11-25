@@ -1,0 +1,53 @@
+<?php
+
+function olccommon_entities_with_common_field_value ($entity_type, $field_name, $attribute, $common_value) {
+  // TODO: Validate arguments
+  $query = '
+    select
+      *
+    from
+      {field_data_' . $field_name . '}
+    where 
+      '.($entity_type != NULL ? '{entity_type} = :entity_type':'').'
+      and {deleted} = :deleted
+      and {' . $attribute . '} = :common_value
+  ';
+  $query_keys = array(
+    ':deleted' => 0,
+    ':common_value' => $common_value
+  );
+  $query_keys += $entity_type != NULL ? array(':entity_type' => $entity_type) : array();
+  return db_query($query, $query_keys);
+}
+
+function olccommon_fields_by_type($entity_type, $field_type) {
+  // TODO: Validate arguments
+  $query = '
+    select distinct
+      fci.field_name as field_name
+    from
+      {field_config} fc
+      inner join {field_config_instance} fci on fc.field_name = fci.field_name
+    where
+      fc.type = :field_type
+      and fc.active = :active
+      and fc.deleted = :deleted
+      '.($entity_type != NULL ? 'and fci.entity_type = :entity_type' : '').'
+      and fci.deleted = :deleted
+  ';
+  $query_keys = array(
+    ':field_type' => $field_type,
+    ':active' => 1,
+    ':deleted' => 0,
+  );
+  $query_keys += $entity_type != NULL ? array(':entity_type' => $entity_type) : array();
+
+  $result = array();
+  $db_result = db_query($query, $query_keys);
+  foreach ($db_result as $db_row) {
+    $result []= $db_row->field_name;
+  }
+  return $result;
+
+}
+

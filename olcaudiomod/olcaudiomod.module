@@ -1,0 +1,9 @@
+<?php
+
+function olcaudiomod_preprocess_audiorecorderfield_wav_player (&$var) {
+  $var['app_gui'] = 'mini';
+  $var['app_width'] = 20;
+  $var['app_height'] = '20';
+  $var['container_width'] = '20';
+  $var['container_height'] = '20';
+}

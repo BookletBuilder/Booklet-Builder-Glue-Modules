@@ -1,0 +1,36 @@
+
+
+.booklet-option-link:first-child {
+  padding-top: 1em;
+}
+.booklet-option-link {
+  display: list-item;
+  list-style-type: disc;
+  margin-left: 1.5em;
+  line-height: 1.5em;
+}
+
+
+
+.view-booklet .views-field-field-category,
+.view-booklet .views-field-field-llc-grammar-category,
+.view-booklet .views-field-field-olc-textbook-section
+{
+  background-color: #dddddd;
+  border: 1px solid #bbbbbb;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.view-booklet .views-field-field-olc-textbook-section {
+  margin-top: 1em;
+}
+
+.view-booklet .views-field-field-category .field-content,
+.view-booklet .views-field-field-llc-grammar-category .field-content,
+.view-booklet .views-field-field-olc-textbook-section .field-content
+{
+  display: inline;
+}
+
+

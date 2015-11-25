@@ -1,0 +1,120 @@
+<?php
+
+function _olclangreplace_replacements() {
+
+  $replacements = array(
+    
+    '{Language being studied}' => 'LANGUAGE_GOES_HERE language', 
+    '{Language for communicating instructions}' => 'INSTRUCTION_LANGUAGE',
+    
+    '{{LanguageBeingStudied}}' => 'LANGUAGE_GOES_HERE language', 
+    '{{LanguageForCommunicatingInstructions}}' => 'INSTRUCTION_LANGUAGE'
+    
+  );
+  
+  return $replacements;
+
+}
+
+function olclangreplace_process_html(&$vars) {
+  
+  //$vars['site_name'] = olclangreplace_replace($vars['site_name']);
+  
+}
+
+function olclangreplace_process_page(&$vars) {
+  
+  //$vars['head_title'] = olclangreplace_replace($vars['head_title']);
+  
+}
+
+function olclangreplace_field_widget_form_alter(&$element, &$form_state, $context) {
+  
+  /**
+   * Edit form field label replacements:
+   */
+
+  $key_patterns = array(
+    
+    array('#title'),
+    array('value', '#title'),
+    array(0, '#title'),
+    
+  );
+
+  // For current field; make sure pattern exists or remove the pattern
+  foreach ($key_patterns as $key_pattern_index => $key_pattern) {
+
+    // walks element    
+    $test = &$element;
+    foreach ($key_pattern as $key_part) {
+      
+      // check if key part exists at element level
+      if (array_key_exists($key_part, $test)) {
+        
+        // key part found; keep pattern
+        $test = &$test[$key_part]; // walks element
+        
+      }
+      else {
+        
+        // key part missing; remove pattern
+        unset($key_patterns[$key_pattern_index]);
+        break;
+      
+      }
+      
+    }
+    
+  }
+
+  // Get array of values (by reference) that are to be changed, wherever they lie in the $element structure
+  $values = array();
+  foreach ($key_patterns as $key_pattern_index => $key_pattern) {
+
+    // Walk the elements found    
+    $test = &$element;
+    foreach ($key_pattern as $key_part) {
+      $test = &$test[$key_part];
+    }
+    
+    // Save a reference to the values wherever they are found in the element object
+    $values []= &$test;
+    
+  }
+
+  // Perform replacements
+  foreach ($values as &$value) {
+    $value = olclangreplace_replace($value);
+  }
+
+}
+
+function olclangreplace_node_view_alter(&$build) {
+  
+  //dpm($build);
+  $build['#post_render'][] = '_olclangreplace_post_render';
+  
+}
+
+function _olclangreplace_post_render(&$output) {
+
+  $output = olclangreplace_replace($output);
+  return $output;
+  
+}
+
+function olclangreplace_replace($value) {
+  
+  $result = $value;
+  
+  $replacements = _olclangreplace_replacements();
+  foreach ($replacements as $from => $to) {
+    
+    $result = str_replace($from, $to, $result);
+    
+  }
+  
+  return $result;
+
+}

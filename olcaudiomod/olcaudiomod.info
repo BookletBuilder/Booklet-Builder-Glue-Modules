@@ -1,0 +1,4 @@
+package = .OLC
+name = OLC Audio Modifications
+description = Modifications related to audio recording and playback
+core = 7.x

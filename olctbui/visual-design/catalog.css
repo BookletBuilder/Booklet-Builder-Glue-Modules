@@ -1,0 +1,56 @@
+
+/* TREE SUB-LISTS */
+div.olc-view-catalog .item-list > ul {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  list-style-type: none;
+}
+div.olc-view-catalog .item-list > ul > li {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+/* TREE ROOT */
+div.olc-view-catalog > div > .item-list > ul {
+  padding-left: 0px;
+}
+
+/* TREE LABELS */
+div.olc-view-catalog .item-list > ul > li > .views-field-name > span {
+  font-family: 'AboriginalSans' !important;
+  font-weight: bold;
+  color: black;
+}
+
+/* TREE CONTENT */
+div.olc-view-catalog .item-list > ul > li > .views-field-view {
+  /* Entire view whether or not it has content */
+  padding: 0px 0px 1em 1em;
+}
+
+div.olc-view-catalog .item-list > ul > li > .views-field-view a {
+  color: black;
+  text-decoration: none;
+  font-family: 'AboriginalSans' !important;
+}
+div.olc-view-catalog .item-list > ul > li > .views-field-view a:hover {
+  background-color: yellow;
+}
+div.olc-view-catalog .item-list > ul > li > .views-field-view > span > div > div > .item-list > ul {
+  /* Content indentation can be adjusted here */
+  padding: 0px;
+}
+div.olc-view-catalog .item-list > ul > li > .views-field-view > span > div > div > .item-list > ul li {
+  padding-bottom: 4px;
+}
+div.olc-view-catalog .item-list > ul > li > .views-field-view > span > div > div > .item-list > ul li .field-content {
+  display: inline-block;
+  position: relative;
+  border-bottom: 2px dotted #bbbbbb;
+}
+div.olc-view-catalog .item-list > ul > li > .views-field-view > span > div > div > .item-list > ul li .field-content a {
+  position: relative;
+  top: .2em;
+  line-height: 1em;
+}
+

@@ -1,0 +1,47 @@
+<?php
+
+function olcgroup_node_load($nodes, $types) {
+
+  // TODO: Use typetype
+  $valid_types = array('section');
+  $valid_types_found = array_intersect($types, $valid_types);
+  $valid_types_found = !empty($valid_types_found);
+  if ($valid_types_found) {
+    foreach ($nodes as $node) {
+
+      $is_valid_type = in_array($node->type, $valid_types);
+      if ($is_valid_type) {
+
+        // Get dictionary of group GIDs per node NIDs; $gids[NID]=GID
+        $gids = og_get_group_ids('node', array($node->nid));
+        if (count($gids) > 0 && array_key_exists($node->nid, $gids)) {
+      
+          // Get the GID for this node's NID
+          $gid = $gids[$node->nid];
+      
+          // Get the group node's content; list of NIDs
+          // Searching: { $NODE | $NODE->group_audience[group_audience_gid] = $gid }
+          $dbnodes = olccommon_entities_with_common_field_value('node', 'group_audience', 'group_audience_gid', $gid);
+      
+          // Add the content NIDs to group node object
+          foreach ($dbnodes as $dbnode) {
+            $node->olc_group_content[$dbnode->bundle] []= $dbnode->entity_id;
+            $node->{'olc_group_content_'.$dbnode->bundle} []= $dbnode->entity_id;
+          }
+        
+        }
+        else {
+          // Missing GIDs
+        }
+      }
+      else {
+        // Invalid node type
+      }
+
+    } // end foreach
+  }
+  else {
+    // Early exit
+  }
+}
+

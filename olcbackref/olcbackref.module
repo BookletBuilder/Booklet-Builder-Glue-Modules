@@ -1,0 +1,21 @@
+<?php
+
+function olcbackref_node_load($nodes, $types) {
+  // TODO: USE TYPETYPE TO EXIT EARLY
+  $er_fields = olccommon_fields_by_type('node', 'entityreference');
+  foreach ($nodes as $node) {
+    // Get the nodes that refer to this node
+    foreach ($er_fields as $er_field) { 
+      $dbnodes = olccommon_entities_with_common_field_value('node', $er_field, $er_field.'_target_id', $node->nid);
+      foreach ($dbnodes as $dbnode) {
+      
+        $node->olc_children['relationship_'.$er_field]['by_node'][$dbnode->entity_id] = $dbnode->bundle;
+        $node->{'olc_children_'.$er_field.'_by_node'}[$dbnode->entity_id] = $dbnode->bundle;
+        
+        $node->olc_children['relationship_'.$er_field]['by_type'][$dbnode->bundle] []= $dbnode->entity_id;
+        $node->{'olc_children_'.$er_field.'_by_type_'.$dbnode->bundle} []= $dbnode->entity_id;
+      }
+    }
+  }
+}
+
