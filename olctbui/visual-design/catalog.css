@@ -17,7 +17,7 @@ div.olc-view-catalog > div > .item-list > ul {
 
 /* TREE LABELS */
 div.olc-view-catalog .item-list > ul > li > .views-field-name > span {
-  font-family: 'AboriginalSans' !important;
+  font-family: 'Avant' !important;
   font-weight: bold;
   color: black;
 }
@@ -31,7 +31,7 @@ div.olc-view-catalog .item-list > ul > li > .views-field-view {
 div.olc-view-catalog .item-list > ul > li > .views-field-view a {
   color: black;
   text-decoration: none;
-  font-family: 'AboriginalSans' !important;
+  font-family: 'Avant' !important;
 }
 div.olc-view-catalog .item-list > ul > li > .views-field-view a:hover {
   background-color: yellow;

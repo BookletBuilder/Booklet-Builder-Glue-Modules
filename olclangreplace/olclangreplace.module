@@ -4,11 +4,11 @@ function _olclangreplace_replacements() {
 
   $replacements = array(
     
-    '{Language being studied}' => 'LANGUAGE_GOES_HERE language', 
-    '{Language for communicating instructions}' => 'INSTRUCTION_LANGUAGE',
+    '{Language being studied}' => 'Osage language', 
+    '{Language for communicating instructions}' => 'English',
     
-    '{{LanguageBeingStudied}}' => 'LANGUAGE_GOES_HERE language', 
-    '{{LanguageForCommunicatingInstructions}}' => 'INSTRUCTION_LANGUAGE'
+    '{{LanguageBeingStudied}}' => 'Osage language', 
+    '{{LanguageForCommunicatingInstructions}}' => 'English'
     
   );
   
