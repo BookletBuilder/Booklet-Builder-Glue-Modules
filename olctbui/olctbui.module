@@ -258,6 +258,9 @@ function _olctbui_og_redirect_to_entity($group) {
   return 'This page redirects to the group\'s entity page';
 }
 
+/**
+ * HOOK_field_widget_form_alter
+ */
 function olctbui_field_widget_form_alter(&$element, &$form_state, $context) {
 
   if(isset($element['#field_name'])) {
@@ -327,7 +330,7 @@ function _olctbui_field_widget_hide(&$element) {
 
 function _olctbui_field_widget_select_from_url_form_alter($field_name, &$element, &$form_state, $context) {
 
-  // TODO: THE WIDGET TYPE SHOULD BE DETERMINED AND HANDLED PER TYPE AND HANDLED PER TYPE AND HANDLED PER TYPE AND HANDLED PER TYPE
+  // TODO: THE "WIDGET TYPE" SHOULD BE "DETERMINED AND HANDLED" PER (NODE?) TYPE
   
   // Display the audiences this node belongs to as HTML (with remove buttons)
   if (isset($element['#field_name'])) {
