@@ -1,25 +1,5 @@
 <?php
 
-function _olclangreplace_replacements() {
-
-  $data_path = drupal_get_path('module', 'olclangreplace') . '/olclangreplace_data.php';
-  if (file_exists($data_path)) {
-
-    include $data_path;
-
-    $replacements = $olclangreplace_data;
-
-  }
-  else {
-
-    drupal_set_message('Missing "olclangreplace_data.php"', 'warning');
-
-  }
-  
-  return $replacements;
-
-}
-
 function olclangreplace_process_html(&$vars) {
   
   //$vars['site_name'] = olclangreplace_replace($vars['site_name']);
@@ -30,6 +10,12 @@ function olclangreplace_process_page(&$vars) {
   
   //$vars['head_title'] = olclangreplace_replace($vars['head_title']);
   
+}
+
+function olclangreplace_form_alter(&$form) {
+
+  $form['title'] = olclangreplace_replace($form['title']);
+
 }
 
 function olclangreplace_field_widget_form_alter(&$element, &$form_state, $context) {
@@ -122,3 +108,24 @@ function olclangreplace_replace($value) {
   return $result;
 
 }
+
+function _olclangreplace_replacements() {
+
+  $data_path = drupal_get_path('module', 'olclangreplace') . '/olclangreplace_data.php';
+  if (file_exists($data_path)) {
+
+    include $data_path;
+
+    $replacements = $olclangreplace_data;
+
+  }
+  else {
+
+    drupal_set_message('Missing "olclangreplace_data.php"', 'warning');
+
+  }
+  
+  return $replacements;
+
+}
+
