@@ -14,7 +14,16 @@ function olclangreplace_process_page(&$vars) {
 
 function olclangreplace_form_alter(&$form) {
 
-  $form['title'] = olclangreplace_replace($form['title']);
+  if (array_key_exists('title', $form)) {
+  
+    $form['title'] = olclangreplace_replace($form['title']);
+
+  }
+  else {
+
+    // pass
+
+  }
 
 }
 
