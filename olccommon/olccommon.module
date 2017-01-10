@@ -1,6 +1,7 @@
 <?php
 
 function olccommon_entities_with_common_field_value ($entity_type, $field_name, $attribute, $common_value) {
+
   // TODO: Validate arguments
   $query = '
     select
@@ -18,9 +19,11 @@ function olccommon_entities_with_common_field_value ($entity_type, $field_name, 
   );
   $query_keys += $entity_type != NULL ? array(':entity_type' => $entity_type) : array();
   return db_query($query, $query_keys);
+
 }
 
 function olccommon_fields_by_type($entity_type, $field_type) {
+
   // TODO: Validate arguments
   $query = '
     select distinct
@@ -50,4 +53,48 @@ function olccommon_fields_by_type($entity_type, $field_type) {
   return $result;
 
 }
+
+function olccommon_build_settings_path_of_module($module, $file) {
+
+  $path = drupal_get_path('module', $module);
+  return "$path/$file";
+
+}
+function olccommon_build_settings_path_of_site($module, $file) {
+
+  $path = conf_path() . "/settings/$module";
+  return "$path/$file";
+
+}
+
+function olccommon_get_settings_file($module, $file) {
+
+
+  $result = NULL;
+
+  $candidates = array(
+    olccommon_build_settings_path_of_site($module, $file),
+    olccommon_build_settings_path_of_module($module, $file)
+  );
+
+  // TODO: Cache candidate values (AND result)
+
+  foreach ($candidates as $candidate) {
+
+    if (file_exists($candidate)) {
+
+      $result = $candidate;
+      break;
+
+    }
+    else {
+      // pass
+    }
+
+  }
+
+  return $result;
+
+}
+
 
