@@ -2,3 +2,5 @@ package = .OLC
 name = OLC Language string replace
 description = Replaces {lang} text
 core = 7.x
+
+dependencies[]= olccommon

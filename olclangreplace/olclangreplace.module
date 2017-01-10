@@ -120,12 +120,13 @@ function olclangreplace_replace($value) {
 
 function _olclangreplace_replacements() {
 
-  $data_path = drupal_get_path('module', 'olclangreplace') . '/olclangreplace_data.php';
+  $replacements = array();
+
+  $data_path = olccommon_get_settings_file('olclangreplace', 'olclangreplace_replacements.php');
   if (file_exists($data_path)) {
 
     include $data_path;
-
-    $replacements = $olclangreplace_data;
+    $replacements += $olclangreplace_replacements;
 
   }
   else {
