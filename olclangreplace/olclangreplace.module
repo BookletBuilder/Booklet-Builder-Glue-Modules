@@ -131,7 +131,7 @@ function _olclangreplace_replacements() {
   }
   else {
 
-    drupal_set_message('Missing "olclangreplace_data.php"', 'warning');
+    drupal_set_message('Missing "olclangreplace_replacements.php"', 'warning');
 
   }
   
