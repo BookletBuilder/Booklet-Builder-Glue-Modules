@@ -2,4 +2,12 @@ package = .OLC
 name = OLC Textbook UI
 description = UI for editing textbook content 
 core = 7.x
-dependencies []= php
+
+dependencies[] = php
+
+stylesheets[all][] = css/olctbui-booklet.css  
+stylesheets[all][] = css/olctbui-booklet-menu.css  
+stylesheets[all][] = css/olctbui-booklet-theme.css  
+stylesheets[all][] = css/olctbui-catalog.css  
+stylesheets[all][] = css/olctbui-default.css
+

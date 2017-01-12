@@ -1,4 +1,5 @@
 package = .OLC
 name = OLC Common
-descriptn = Common functionality used by other OLC modules.
+description = Common functionality used by other OLC modules.
 core = 7.x
+

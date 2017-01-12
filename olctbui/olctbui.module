@@ -2,6 +2,7 @@
 
 function olctbui_init() {
   
+  /*
   $css_files = array(
     'default.css',
     'booklet.css',
@@ -14,6 +15,7 @@ function olctbui_init() {
     $css_path = $path.'/visual-design/'.$css_file;
     drupal_add_css($css_path, array('every_page' => TRUE));
   }
+  */
 
 }
 
