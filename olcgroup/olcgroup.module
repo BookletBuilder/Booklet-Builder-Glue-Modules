@@ -5,38 +5,30 @@
  */
 function olcgroup_node_load($nodes, $types) {
 
-  // TODO: Use typetype
+  _olcgroup_node_load($nodes, $types);
 
-  $valid_types = array('section');
+}
+
+function _olcgroup_node_load($nodes, $types) {
+
+  $valid_types = array('section'); // TODO: Use "typetype" ("glue" module)
+
   $valid_types_found = array_intersect($types, $valid_types);
   $is_valid_types_found = !empty($valid_types_found);
-
   if ($is_valid_types_found) {
-    foreach ($nodes as $node) {
+
+    foreach ($nodes as &$node) {
 
       $is_valid_type = in_array($node->type, $valid_types);
       if ($is_valid_type) {
+        if (og_is_group('node', $node)) {
 
-        // Get dictionary of group GIDs per node NIDs; $gids[NID]=GID
-        $gids = og_get_group_ids('node', array($node->nid));
-        if (count($gids) > 0 && array_key_exists($node->nid, $gids)) {
-      
-          // Get the GID for this node's NID
-          $gid = $gids[$node->nid];
-      
-          // Get the group node's content; list of NIDs
-          // Searching: { $NODE | $NODE->group_audience[group_audience_gid] = $gid }
-          $dbnodes = olccommon_entities_with_common_field_value('node', 'group_audience', 'group_audience_gid', $gid);
-      
-          // Add the content NIDs to group node object
-          foreach ($dbnodes as $dbnode) {
-            $node->olc_group_content[$dbnode->bundle] []= $dbnode->entity_id;
-            $node->{'olc_group_content_'.$dbnode->bundle} []= $dbnode->entity_id;
-          }
-        
+          $node_gid = _olcgroup_get_gid($node);
+          _olcgroup_prepare_group_node($node, $node_gid);
+
         }
         else {
-          // Missing GIDs
+          // Not a group node
         }
       }
       else {
@@ -44,9 +36,53 @@ function olcgroup_node_load($nodes, $types) {
       }
 
     } // end foreach
+
   }
   else {
-    // Early exit
+    // Invalid node types
   }
+}
+
+function _olcgroup_get_gid($node) {
+
+  $og_version = NULL;
+  $og_module_info = system_get_info('module', 'og');
+
+  // TODO: Determine module version
+
+  // In OG 1.x
+  // Assumption: $node is a group node
+  // $gids = og_get_group_ids('node', array($node->nid));
+  // $gid = $gids[$node->nid];
+  // return $gid;
+
+  // In OG 2.x the node NID <=> group GID
+  return $node->nid;
+
+}
+
+function _olcgroup_prepare_group_node(&$group_node, $group_gid) {
+
+  // Retrieve the group's content nodes (list of NIDs)
+  // Querying: {$NODE | $NODE->group_audience[group_audience_gid] = $gid}
+  $content_nodes = olccommon_entities_with_common_field_value('node', 'group_audience', 'group_audience_gid', $group_gid);
+
+  _olcgroup_group__append_content_nids($group_node, $content_nodes);
+
+}
+
+function _olcgroup_group__append_content_nids(&$group_node, $content_nodes) {
+
+  // Add the content NIDs to group node object
+  foreach ($content_nodes as $content_node) {
+
+    // Format A
+    $group_node->olc_group_content[$content_node->bundle] []= $content_node->entity_id;
+
+    // Format B
+    $group_node->{'olc_group_content_'.$content_node->bundle} []= $content_node->entity_id;
+
+  }
+
 }
 
