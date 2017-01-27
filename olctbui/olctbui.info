@@ -5,6 +5,7 @@ core = 7.x
 
 dependencies[] = php
 
+stylesheets[all][] = css/block-olctbui-olctbui-section.css  
 stylesheets[all][] = css/olctbui-booklet.css  
 stylesheets[all][] = css/olctbui-booklet-menu.css  
 stylesheets[all][] = css/olctbui-booklet-theme.css  
