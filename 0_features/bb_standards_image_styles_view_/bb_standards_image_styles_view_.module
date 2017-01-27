@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the BB Standards - Image Styles "View" feature.
+ */
+
+include_once 'bb_standards_image_styles_view_.features.inc';

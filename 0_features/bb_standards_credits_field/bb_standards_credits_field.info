@@ -1,0 +1,9 @@
+name = BB Standards - Credits Field
+core = 7.x
+package = Booklet Builder
+version = 7.x-0.1
+dependencies[] = features
+dependencies[] = text
+features[features_api][] = api:2
+features[field_base][] = field_credits
+features[field_instance][] = node-section-field_credits

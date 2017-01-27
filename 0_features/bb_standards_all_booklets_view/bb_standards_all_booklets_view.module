@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the BB Standards - All booklets view feature.
+ */
+
+include_once 'bb_standards_all_booklets_view.features.inc';
