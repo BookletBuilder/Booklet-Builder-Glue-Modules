@@ -141,25 +141,39 @@ function _olctbui_block_view_section () {
       'narrative',
       'article'
     );
+
     $items = array();
+
     foreach ($types as $type) {
+
       $node_type = node_type_load($type);
-      $items []= l('Add '.$node_type->name, 'node/add/'.$node_type->type, array('query'=>array(
-        'group_audience' => $section_group->gid,
-        'destination' => 'node/'.$section->nid,
-      )));
+
+      $l_name = $node_type->name;
+      $l_path = "node/add/$node_type->type";
+      $l_options = array(
+        'query'=>array(
+          'group_audience' => $section_group->gid,
+          'destination' => 'node/'.$section->nid,
+        ),
+      );
+
+      $items []= l($l_name, $l_path, $l_options);
+
     }
     
-    $content = theme('item_list', array('items' => $items));
+    $content = '<nav>' . implode(' ', $items) . '</nav>';
+    //$content = theme('item_list', array('items' => $items));
   
   }
   else {
+
     $content = 'Not a "Section" node page';
+
   }
 
   // Return block
   return array(
-    'subject' => 'Booklet options',
+    'subject' => 'Add...',
     'content' => array(
       '#markup' => $content
     ),
