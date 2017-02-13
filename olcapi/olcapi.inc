@@ -51,6 +51,7 @@ function _olcapi_chapters () {
   // Return the results
   $result ['data'] = $terms;
   $result ['status']['success'] [] = 'Finished';
+
   return $result; 
   
 }
@@ -67,12 +68,15 @@ function _olcapi_chapter ($term) {
   
   $result ['data'] = $term;
   $result ['status']['success'] [] = 'Finished';
+  
   return $result;
   
 }
 
 function _olcapi_sections () {
+
   $result = array();
+
   // Who references me?
   $query_result = db_query('
     select distinct
@@ -89,11 +93,16 @@ function _olcapi_sections () {
     	    {field_data_field_prerequisites} node_has_prereq
     	)
   ', array(':type' => 'section'));
+
   foreach ($query_result as $row) {
+
     $result ['data'] []= $row;
+
   }
+
   $result ['status']['success'] [] = 'Finished';
   return $result;
+
 }
 
 function _olcapi_section ($node) {
@@ -258,10 +267,14 @@ function _olcapi_node ($nid) {
   
   // Prepare URL
   unset($_GET['q']);
-  $url = url("node/$nid.json", array(
-    'absolute'=> TRUE, 
-    'query' => $_GET
-  ));
+
+  $url = url(
+    "node/$nid.json", 
+    array(
+      'absolute'=> TRUE, 
+      'query' => $_GET
+    )
+  );
 
   // Set header  
   header("Location: $url");
@@ -281,3 +294,4 @@ function _olcapi_file ($file) {
   exit;
   
 }
+

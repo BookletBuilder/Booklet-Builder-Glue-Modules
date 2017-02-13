@@ -13,8 +13,8 @@ function _olcapi_representation ($data) {
   $result = json_encode($data);
   $result = array_key_exists('callback', $_GET)
           ? $_GET['callback'] . '(' . $result . ');'
-		  : $result
-		  ;
+		      : $result
+		      ;
   
   echo $result;
 
@@ -24,6 +24,7 @@ function _olcapi_representation ($data) {
 }
 
 function olcapi_menu() {
+
   $items = array();
   $items['api'] = array(
     'page callback' => '_olcapi_basepath',
@@ -95,28 +96,36 @@ function olcapi_menu() {
     'type' => MENU_CALLBACK,
   	'file' => 'olcapi.inc',
   );
+
   return $items;
+
 }
 
 function _olcapi_query_section_content_nodes ($group_gid, $node_type_array) {
-  $query_result = db_query('
-    SELECT 
-      n.type,
-      n.nid
-    FROM
-      {og_membership} c inner join 
-      {node} n on (
-        c.gid = :group_gid
-        and c.entity_type = :entity_type
-        and c.etid = n.nid
-        and n.type in (:node_types)
-      )
-  ', array(
-    ':group_gid' => $group_gid,
-    ':entity_type' => 'node',
-    ':node_types' => $node_type_array,
-  ));
+
+  $query_result = db_query(
+    '
+      SELECT 
+        n.type,
+        n.nid
+      FROM
+        {og_membership} c inner join 
+        {node} n on (
+          c.gid = :group_gid
+          and c.entity_type = :entity_type
+          and c.etid = n.nid
+          and n.type in (:node_types)
+        )
+    ', 
+    array(
+      ':group_gid' => $group_gid,
+      ':entity_type' => 'node',
+      ':node_types' => $node_type_array,
+    )
+  );
+
   return $query_result;
+
 }
 
 function _olcapi_query_content_instruction_nodes ($for_entity_nid, $group_gid = NULL) {
@@ -168,8 +177,11 @@ function _olcapi_group_by_parent_node (&$all_children, $field_to_parent) {
     // Collect the parent nodes
     $parent_nids = array();
     foreach ($all_children as $child) {
+
       $parent_nids []= $child['node']->{$field_to_parent}['und'][0]['target_id']; 
+
     }
+
     $parent_nids = array_unique($parent_nids);
     
     // Load the parent nodes
@@ -185,8 +197,10 @@ function _olcapi_group_by_parent_node (&$all_children, $field_to_parent) {
     
     // Re-arrange children
     foreach ($all_children as &$child) {
+
       $parent_nid = $child['node']->{$field_to_parent}['und'][0]['target_id'];
       $children[$parent_nid]['children'] []= $child;
+
     }
     
     $all_children = $children;
@@ -194,10 +208,14 @@ function _olcapi_group_by_parent_node (&$all_children, $field_to_parent) {
 }
 
 function _olcapi_compare_morpheme($a, $b) {
+
   $a_text = $a['node']->field_morpheme['und'][0]['safe_value'];
   $b_text = $b['node']->field_morpheme['und'][0]['safe_value'];
+
   $col = new Collator('');
+
   return $col->compare($a_text, $b_text);
+
 }
 
 function _olcapi_compare_weights($a, $b) {
@@ -235,21 +253,34 @@ function _olcapi_compare_weights($a, $b) {
 }
 
 function _olcapi_compare_parent_weights($a, $b) {
+
   return _olcapi_compare_weights($a['parent'], $b['parent']);
+
 }
 
 function _olcapi_instruction_nodes($for_nid) {
+
   $instructions = array();
   $instruct_result = _olcapi_query_content_instruction_nodes($for_nid);
+
   foreach ($instruct_result as $instruct_nid) {
+
     $instructions []= node_load($instruct_nid->nid);
+
   }
+
   return $instructions;
+
 }
 
 function _olcapi_compare_nids_by_node_weight ($a, $b) {
+
   return _olcapi_compare_weights(
+
     array('node' => node_load($a)), 
     array('node' => node_load($b))
+
   );
+
 }
+
