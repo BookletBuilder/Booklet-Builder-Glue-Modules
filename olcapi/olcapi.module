@@ -40,6 +40,8 @@ function olcapi_menu() {
   	'type' => MENU_CALLBACK,
   	'file' => 'olcapi.inc',
   );
+  $items['api/chapters'] = $items['api/chapter'];
+
   $items['api/chapter/%taxonomy_term'] = array(
     'page callback' => '_olcapi_chapter',
     'page arguments' => array(2),
@@ -48,6 +50,8 @@ function olcapi_menu() {
   	'type' => MENU_CALLBACK,
   	'file' => 'olcapi.inc',
   );
+  $items['api/chapters/%taxonomy_term'] = $items['api/chapter/%taxonomy_term'];
+
   $items['api/section'] = array(
     'page callback' => '_olcapi_sections',
     'page arguments' => array(2),
@@ -56,6 +60,10 @@ function olcapi_menu() {
     'type' => MENU_CALLBACK,
   	'file' => 'olcapi.inc',
   );
+  $items['api/sections'] = $items['api/section'];
+  $items['api/booklet'] = $items['api/section'];
+  $items['api/booklets'] = $items['api/section'];
+
   $items['api/section/%node'] = array(
     'page callback' => '_olcapi_section',
     'page arguments' => array(2),
@@ -64,14 +72,7 @@ function olcapi_menu() {
   	'type' => MENU_CALLBACK,
   	'file' => 'olcapi.inc',
   );
-  $items['api/booklet'] = array(
-    'page callback' => '_olcapi_sections',
-    'page arguments' => array(2),
-    'delivery callback' => '_olcapi_representation',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-  	'file' => 'olcapi.inc',
-  );
+  $items['api/sections/%node'] = $items['api/section/%node'];
   $items['api/booklet/%node'] = array(
     'page callback' => '_olcapi_booklet',
     'page arguments' => array(2),
@@ -80,6 +81,8 @@ function olcapi_menu() {
     'type' => MENU_CALLBACK,
   	'file' => 'olcapi.inc',
   );
+  $items['api/booklets/%node'] = $items['api/booklet/%node'];
+
   $items['api/node/%'] = array(
     'page callback' => '_olcapi_node',
     'page arguments' => array(2),
@@ -88,6 +91,8 @@ function olcapi_menu() {
     'type' => MENU_CALLBACK,
   	'file' => 'olcapi.inc',
   );
+  $items['api/nodes/%'] = $items['api/node/%'];
+
   $items['api/file/%file'] = array(
     'page callback' => '_olcapi_file',
     'page arguments' => array(2),
@@ -96,6 +101,7 @@ function olcapi_menu() {
     'type' => MENU_CALLBACK,
   	'file' => 'olcapi.inc',
   );
+  $items['api/files/%file'] = $items['api/file/%file'];
 
   return $items;
 
