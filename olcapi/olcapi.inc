@@ -109,14 +109,23 @@ function _olcapi_section ($node) {
   
   $result = array();
 
+  //
   // Section's node
+  //
+
   $result['data']['node'] = $node;
   
+  //
   // Section's group
+  //
+
   $group = og_get_group('node', $node->nid);
   $result['data']['group'] = $group; 
 
+  //
   // Section's parts
+  //
+  
   $parts = new stdClass;
   $types = array(
     'lesson',
@@ -131,27 +140,47 @@ function _olcapi_section ($node) {
     'narrative',
     'article'
   );
+
   $query_result = _olcapi_query_section_content_nodes($group->gid, $types);
+
   foreach ($query_result as $row) {
+
     $parts->{$row->type} []= array('node' => node_load($row->nid));
+
   }
+
   $result['data']['section_parts'] = $parts;
   
+  //
   // Add instructions for each part
+  //
+
   foreach ($result['data']['section_parts'] as $type => &$part_items) {
     foreach ($part_items as &$part_item) {
+
       $part_item['instructions'] = _olcapi_instruction_nodes($part_item['node']->nid);
+
     }
   }
   
+  //
   // Sort parts by weights
+  //
+
   foreach ($result['data']['section_parts'] as &$part) {
+
     usort($part, '_olcapi_compare_weights');
+
   }
   
+  //
   // Sort morphemes by alphabet
+  //
+
   if (isset($result['data']['section_parts']->morpheme)) {
+
     usort($result['data']['section_parts']->morpheme, '_olcapi_compare_morpheme');
+
   }
   else {
     // Morpeheme missing
@@ -159,16 +188,17 @@ function _olcapi_section ($node) {
   
   if (isset($result['data']['section_parts']->conjugation)) {
     
-    // Re-arranging conjugations
-    _olcapi_group_by_parent_node(
-      $result['data']['section_parts']->conjugation, 
-      'field_root_word'
-    );
+    //
+    // Re-arrange conjugations
+    // 
+
+    _olcapi_group_by_parent_node( $result['data']['section_parts']->conjugation, 'field_root_word');
+
+    //
+    // Sort conjugations
+    //
     
-    usort(
-      $result['data']['section_parts']->conjugation,
-      '_olcapi_compare_parent_weights'
-    );
+    usort( $result['data']['section_parts']->conjugation, '_olcapi_compare_parent_weights');
     
   }
   else {
@@ -177,20 +207,56 @@ function _olcapi_section ($node) {
 
   if (isset($result['data']['section_parts']->conversation_turn)) {
     
-    // Re-arranging conversations
-    _olcapi_group_by_parent_node(
-      $result['data']['section_parts']->conversation_turn,
-      'field_for_conversation'
-    );
+    //
+    // Re-arrange conversations
+    //
 
-    foreach ($result['data']['section_parts']->conversation_turn as &$conversation) {
-      $conversation['parent']['instructions'] = _olcapi_instruction_nodes($conversation['parent']['node']->nid);
+    _olcapi_group_by_parent_node($result['data']['section_parts']->conversation_turn, 'field_for_conversation');
+
+    $conversations = &$result['data']['section_parts']->conversation_turn;
+
+    //
+    // Prune orphaned conversations
+    //
+
+    foreach ($conversations as $conversation_index => &$conversation) {
+
+      if (!$conversation['parent']['node']) {
+
+        unset($conversations[$conversation_index]);
+
+      }
+      else {
+        // pass
+      }
+
     }
 
-    usort(
-      $result['data']['section_parts']->conversation_turn,
-      '_olcapi_compare_parent_weights'
-    );
+    //
+    // Add instructions to parent (conversation)
+    //
+
+    foreach ($conversations as &$conversation) {
+
+      $conversation['parent']['instructions'] = _olcapi_instruction_nodes($conversation['parent']['node']->nid);
+
+    }
+
+    //
+    // Sort the parent (conversation)
+    //
+
+    usort($conversations, '_olcapi_compare_conversation_parents');
+
+    //
+    // Sort the conversation turns
+    //
+
+    foreach ($conversations as &$conversation) {
+
+      usort($conversation['children'], '_olcapi_compare_conversation_turns');
+
+    }
     
   }
   else {

@@ -64,6 +64,7 @@ function olcapi_menu() {
   $items['api/booklet'] = $items['api/section'];
   $items['api/booklets'] = $items['api/section'];
 
+
   $items['api/section/%node'] = array(
     'page callback' => '_olcapi_section',
     'page arguments' => array(2),
@@ -73,6 +74,8 @@ function olcapi_menu() {
   	'file' => 'olcapi.inc',
   );
   $items['api/sections/%node'] = $items['api/section/%node'];
+
+
   $items['api/booklet/%node'] = array(
     'page callback' => '_olcapi_booklet',
     'page arguments' => array(2),
@@ -82,6 +85,7 @@ function olcapi_menu() {
   	'file' => 'olcapi.inc',
   );
   $items['api/booklets/%node'] = $items['api/booklet/%node'];
+
 
   $items['api/node/%'] = array(
     'page callback' => '_olcapi_node',
@@ -93,6 +97,7 @@ function olcapi_menu() {
   );
   $items['api/nodes/%'] = $items['api/node/%'];
 
+
   $items['api/file/%file'] = array(
     'page callback' => '_olcapi_file',
     'page arguments' => array(2),
@@ -102,6 +107,7 @@ function olcapi_menu() {
   	'file' => 'olcapi.inc',
   );
   $items['api/files/%file'] = $items['api/file/%file'];
+
 
   return $items;
 
@@ -227,6 +233,7 @@ function _olcapi_compare_morpheme($a, $b) {
 function _olcapi_compare_weights($a, $b) {
   
   $LT = -1;
+  $EQ = 0;
   $GT = 1;
   
   if (isset($a['node']->field_weight['und'][0]['value'])) {
@@ -244,7 +251,7 @@ function _olcapi_compare_weights($a, $b) {
   }
   
   if ($a_weight === $b_weight) {
-    return 0;
+    return $EQ;
   }
   elseif ($a_weight === NULL) {
     return $LT;
@@ -264,6 +271,57 @@ function _olcapi_compare_parent_weights($a, $b) {
 
 }
 
+function _olcapi_compare_gender($a, $b) {
+
+  $a_text = $a['node']->field_gender['und'][0]['value'];
+  $b_text = $b['node']->field_gender['und'][0]['value'];
+
+  $col = new Collator('');
+
+  return $col->compare($a_text, $b_text);
+
+}
+
+function _olcapi_compare_parent_gender($a, $b) {
+
+  return _olcapi_compare_gender($a['parent'], $b['parent']);
+
+}
+
+function _olcapi_compare_conversation_parents($a, $b) {
+
+  $gender_cmp = _olcapi_compare_parent_gender($a, $b);
+  if ($gender_cmp == 0) {
+
+    $weight_cmp = _olcapi_compare_parent_weights($a, $b);
+    return $weight_cmp;
+
+  }
+  else {
+    return $gender_cmp;
+  }
+
+}
+function _olcapi_compare_conversation_turns($a, $b) {
+
+  $LT = -1;
+  $EQ = 0;
+  $GT = 1;
+
+  $weight_cmp = _olcapi_compare_weights($a, $b);
+
+  if ($weight_cmp == $EQ) {
+
+    $nid_cmp = $a['node']->nid < $b['node']->nid ? $LT: $GT;
+    return $nid_cmp;
+
+  }
+  else {
+    return $weight_cmp;
+  }
+
+}
+
 function _olcapi_instruction_nodes($for_nid) {
 
   $instructions = array();
@@ -275,7 +333,7 @@ function _olcapi_instruction_nodes($for_nid) {
 
   }
 
-  return $instructions;
+    return $instructions;
 
 }
 
