@@ -185,6 +185,19 @@ function _olcapi_section ($node) {
   else {
     // Morpeheme missing
   }
+
+  //
+  // Sort vocabulary by alphabet
+  //
+
+  if (isset($result['data']['section_parts']->word)) {
+
+    usort($result['data']['section_parts']->word, '_olcapi_compare_word');
+
+  }
+  else {
+    // Vocabulary missing
+  }
   
   if (isset($result['data']['section_parts']->conjugation)) {
     

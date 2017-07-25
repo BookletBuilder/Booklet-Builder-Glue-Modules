@@ -219,14 +219,26 @@ function _olcapi_group_by_parent_node (&$all_children, $field_to_parent) {
   
 }
 
-function _olcapi_compare_morpheme($a, $b) {
+function _olcapi_compare_textfield($a, $b, $field_name) {
 
-  $a_text = $a['node']->field_morpheme['und'][0]['safe_value'];
-  $b_text = $b['node']->field_morpheme['und'][0]['safe_value'];
+  $a_text = $a['node']->{$field_name}['und'][0]['safe_value'];
+  $b_text = $b['node']->{$field_name}['und'][0]['safe_value'];
 
   $col = new Collator('');
 
   return $col->compare($a_text, $b_text);
+
+}
+
+function _olcapi_compare_morpheme($a, $b) {
+
+  return _olcapi_compare_textfield($a, $b, 'field_morpheme');
+
+}
+
+function _olcapi_compare_word($a, $b) {
+
+  return _olcapi_compare_textfield($a, $b, 'field_word');
 
 }
 
